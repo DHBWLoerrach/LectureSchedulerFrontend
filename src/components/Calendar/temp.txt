@@ -1,0 +1,462 @@
+import React, { useState, useEffect, useRef } from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { registerLocale } from 'react-datepicker';
+import de from 'date-fns/locale/de'; // Import German locale
+import Select from 'react-select';
+
+// Deine API-Funktionen
+import { ShowCoursesAPI } from '../APIs/Courses/ShowCoursesAPI';
+import { ShowSGAPI } from '../APIs/SG/ShowSGAPI';
+import { ShowModulesAPI } from '../APIs/Modules/ShowModulesAPI';
+
+import { ShowCalendarAPI } from '../APIs/Calendar/ShowCalendarAPI';
+import { UpdateCalendarAPI } from '../APIs/Calendar/UpdateCalendarAPI';
+
+import '../_Datapicker.css';
+
+// -------------------------------------------------------------
+// Hilfsfunktionen für Wochenberechnung, wie gehabt
+// -------------------------------------------------------------
+registerLocale('de', de);
+
+function getWeekDates(weekNumber, year) {
+  let firstDayOfYear = new Date(year, 0, 1);
+  let daysToThursday = (4 - firstDayOfYear.getDay() + 7) % 7;
+  let firstThursday = new Date(year, 0, 1 + daysToThursday);
+  let weekStart = new Date(firstThursday);
+  weekStart.setDate(firstThursday.getDate() + (weekNumber - 1) * 7 - 3);
+  
+  let weekDates = [];
+  for (let i = 0; i < 5; i++) {
+    let day = new Date(weekStart);
+    day.setDate(weekStart.getDate() + i);
+    weekDates.push(day.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "2-digit" }));
+  }
+  return weekDates;
+}
+
+function getCurrentISOWeekAndYear() {
+  const today = new Date();
+  const dayIndex = today.getDay() === 0 ? 7 : today.getDay();
+  const thursday = new Date(today);
+  thursday.setDate(today.getDate() - dayIndex + 4);
+
+  const firstThursday = new Date(thursday.getFullYear(), 0, 4);
+  const firstDayIndex = firstThursday.getDay() === 0 ? 7 : firstThursday.getDay();
+  firstThursday.setDate(firstThursday.getDate() - firstDayIndex + 4);
+
+  const weekNumber = Math.round((thursday - firstThursday) / (7 * 24 * 60 * 60 * 1000)) + 1;
+
+  return { week: weekNumber, year: thursday.getFullYear() };
+}
+
+function getISOWeekNumber(date) {
+  const tmpDate = new Date(date.getTime());
+  const dayNumber = date.getDay() === 0 ? 7 : date.getDay();
+  tmpDate.setDate(date.getDate() + 4 - dayNumber);
+  const yearStart = new Date(tmpDate.getFullYear(), 0, 1);
+  return Math.ceil((((tmpDate - yearStart) / 86400000) + 1) / 7);
+}
+
+function getWeeksInYear(year) {
+  const dec31 = new Date(year, 11, 31);
+  let week = getISOWeekNumber(dec31);
+  if (week === 1) {
+    week = getISOWeekNumber(new Date(year, 11, 24));
+  }
+  return week;
+}
+
+// -------------------------------------------------------------
+// Hauptkomponente
+// -------------------------------------------------------------
+const TempKalender = () => {
+  const initial = getCurrentISOWeekAndYear();
+
+  const [state, setState] = useState({
+    selectedDate: null,
+    loading: true,
+    imagesLoaded: false,
+    kurse: [],
+    sgs: [],
+    modules: [],
+    currentWeek: initial.week,
+    currentYear: initial.year,
+    selectedWeek: getWeekDates(initial.week, initial.year),
+    selectedCourse: null,
+    selectedModule: null,
+    moduleOptions: [],
+    schedule: {}, // Zeitfensterzuweisungen, z.B. { "08:00-09:00 Montag 01.03.25": {value: ..., label: ...} }
+  });
+
+  // -----------------------------------------------------------
+  // Bilder laden (falls du Logos etc. hast)
+  // -----------------------------------------------------------
+  const images = ["img/DHBW_Logo.png", "img/DashboardNav.png"];
+  useEffect(() => {
+    const loadImages = async () => {
+      const promises = images.map((src) => {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.src = src;
+          img.onload = resolve;
+          img.onerror = reject;
+        });
+      });
+      await Promise.all(promises);
+      setState(prev => ({ ...prev, imagesLoaded: true }));
+    };
+    loadImages();
+  }, []);
+
+  // -----------------------------------------------------------
+  // Daten für Kurse, SG, Module & bestehendes Kalender-Objekt laden
+  // -----------------------------------------------------------
+  useEffect(() => {
+    const fetchAllData = async () => {
+      try {
+        // 1) Kurse
+        const allE = await ShowCoursesAPI();
+        const kurse = allE.map(item => ({
+          value: item[0],   // Kurs-ID
+          label: item[1],   // Kursname
+          sg: item[2],      // SG-ID
+          semester: item[3] // Semester
+        }));
+
+        // 2) SG
+        const sgs = await ShowSGAPI();
+
+        // 3) Module
+        const modules = await ShowModulesAPI();
+
+        // 4) Kalender-Objekt laden (falls schon vorhanden in DB)
+        //    Wir nehmen an, ShowCalendarAPI() gibt z. B. { schedule: {...} }
+        const calendarData = await ShowCalendarAPI();
+
+        // 5) State aktualisieren
+        setState(prev => ({
+          ...prev,
+          kurse,
+          sgs,
+          modules,
+          schedule: calendarData?.schedule || {}, // Falls leer, nimm {}
+          loading: false
+        }));
+      } catch (error) {
+        console.error("Fehler beim Laden:", error);
+        setState(prev => ({ ...prev, loading: false }));
+      }
+    };
+
+    fetchAllData();
+  }, []);
+
+  // -----------------------------------------------------------
+  // Navigationshandler für Kalenderwoche
+  // -----------------------------------------------------------
+  const handlePreviousWeek = () => {
+    setState(prev => {
+      let newWeek = prev.currentWeek - 1;
+      let newYear = prev.currentYear;
+      if (newWeek < 1) {
+        newYear = prev.currentYear - 1;
+        newWeek = getWeeksInYear(newYear);
+      }
+      return {
+        ...prev,
+        currentWeek: newWeek,
+        currentYear: newYear,
+        selectedWeek: getWeekDates(newWeek, newYear)
+      };
+    });
+  };
+
+  const handleNextWeek = () => {
+    setState(prev => {
+      let newWeek = prev.currentWeek + 1;
+      let newYear = prev.currentYear;
+      const weeksInYear = getWeeksInYear(prev.currentYear);
+      if (newWeek > weeksInYear) {
+        newYear = prev.currentYear + 1;
+        newWeek = 1;
+      }
+      return {
+        ...prev,
+        currentWeek: newWeek,
+        currentYear: newYear,
+        selectedWeek: getWeekDates(newWeek, newYear)
+      };
+    });
+  };
+
+  // -----------------------------------------------------------
+  // Kursauswahl => SG & Semester => passende Module filtern
+  // -----------------------------------------------------------
+  const handleCourseChange = (selectedOption) => {
+    if (!selectedOption) {
+      setState(prev => ({
+        ...prev,
+        selectedCourse: null,
+        selectedModule: null,
+        moduleOptions: []
+      }));
+      return;
+    }
+
+    // Kurs übernehmen
+    setState(prev => ({
+      ...prev,
+      selectedCourse: selectedOption,
+      selectedModule: null
+    }));
+
+    // SG-ID & Semester
+    const { sg, semester } = selectedOption;
+    if (!sg || !semester) {
+      // Kein passender SG oder Semester => Abbruch
+      setState(prev => ({ ...prev, moduleOptions: [] }));
+      return;
+    }
+
+    // Richtiges SG in sgs[] suchen
+    const foundSG = state.sgs.find(sgArray => sgArray[0] === sg);
+    if (!foundSG) {
+      // SG nicht gefunden => leere Module
+      setState(prev => ({ ...prev, moduleOptions: [] }));
+      return;
+    }
+
+    // Semester => Index in SG-Array (Semester 1 = index 2, Semester 2 = index 3, ...)
+    const sgIndex = parseInt(semester, 10) + 1;
+    const sgModuleIds = foundSG[sgIndex]; // Array der Modul-IDs
+
+    if (Array.isArray(sgModuleIds)) {
+      // Module filtern
+      const moduleOptions = state.modules
+        // modules: [ [..., modulName, ..., modulId], ... ] => modulId in index 9 ODER index 0 (je nach API!)
+        .filter(mod => sgModuleIds.includes(mod[0])) // Achte hier auf die richtige Indexstelle
+        .map(mod => ({
+          value: mod[0],  // Modul-ID
+          label: mod[1]   // Modulname
+        }));
+
+      setState(prev => ({ ...prev, moduleOptions }));
+    } else {
+      setState(prev => ({ ...prev, moduleOptions: [] }));
+    }
+  };
+
+  // -----------------------------------------------------------
+  // Modul-Auswahl
+  // -----------------------------------------------------------
+  const handleModuleChange = (selectedOption) => {
+    setState(prev => ({
+      ...prev,
+      selectedModule: selectedOption
+    }));
+  };
+
+  // -----------------------------------------------------------
+  // Modul einem Zeitfenster zuweisen
+  // -----------------------------------------------------------
+  const assignModuleToTimeSlot = (timeSlot) => {
+    if (state.selectedModule) {
+      setState(prev => ({
+        ...prev,
+        schedule: {
+          ...prev.schedule,
+          [timeSlot]: state.selectedModule
+        }
+      }));
+    }
+  };
+
+  // -----------------------------------------------------------
+  // Plan in MongoDB speichern
+  // -----------------------------------------------------------
+  const handleSaveCalendar = async () => {
+    try {
+      // Wir senden z. B. nur das schedule
+      // Du kannst auch currentWeek, currentYear etc. mitschicken
+      const dataToSave = {
+        schedule: state.schedule,
+      };
+      // API-Aufruf
+      await UpdateCalendarAPI(dataToSave);
+      alert("Kalender erfolgreich gespeichert!");
+    } catch (error) {
+      console.error("Fehler beim Speichern:", error);
+      alert("Fehler beim Speichern!");
+    }
+  };
+
+  // -----------------------------------------------------------
+  // Rendering
+  // -----------------------------------------------------------
+  if (state.loading) {
+    return (
+      <div id="spinner" className="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div className="spinner-border text-primary" role="status">
+          <span className="sr-only">Loading...</span>
+        </div>
+        <img src="img/DHBW_Logo.png" alt="DHBW Logo" width="100vh" height="auto" />
+      </div>
+    );
+  }
+
+  // Beispiel: Generiere 15-Minuten-Schritte von 8:00 bis 18:00
+  const generateSchedule = (startHour, endHour, intervalMinutes) => {
+    const times = [];
+    for (let hour = startHour; hour < endHour; hour++) {
+      for (let minute = 0; minute < 60; minute += intervalMinutes) {
+        const time = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
+        times.push(time);
+      }
+    }
+    return times;
+  };
+
+  const days = [
+    "Montag " + state.selectedWeek[0],
+    "Dienstag " + state.selectedWeek[1],
+    "Mittwoch " + state.selectedWeek[2],
+    "Donnerstag " + state.selectedWeek[3],
+    "Freitag " + state.selectedWeek[4]
+  ];
+  const scheduleTimes = generateSchedule(8, 18, 15);
+
+  return (
+    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
+      <h1 style={{ textAlign: "center" }}>
+        Stundenplan Woche: {state.selectedWeek[0]} - {state.selectedWeek[4]}
+      </h1>
+
+      {/* Kurs auswählen */}
+      <p className="text-start"><strong>Kurs auswählen</strong></p>
+      <Select
+        options={state.kurse}
+        onChange={handleCourseChange}
+        placeholder="Kurs auswählen"
+        value={state.selectedCourse}
+      />
+      <br />
+
+      {/* Modul auswählen */}
+      <p className="text-start"><strong>Modul auswählen</strong></p>
+      <Select
+        options={state.moduleOptions}
+        onChange={handleModuleChange}
+        placeholder="Modul auswählen"
+        value={state.selectedModule}
+        isDisabled={!state.selectedCourse}
+      />
+      <br />
+
+      {/* Buttons für Wochen-Navigation */}
+      <div className="d-flex justify-content-between">
+        <button type="button" className="btn btn-sm btn-primary" onClick={handlePreviousWeek}>
+          <i className="bi-arrow-left fa-1x text-white"></i>
+        </button>
+        <button type="button" className="btn btn-sm btn-primary" onClick={handleNextWeek}>
+          <i className="bi-arrow-right fa-1x text-white"></i>
+        </button>
+      </div>
+
+      {/* Stundenplan-Tabelle */}
+      <h3 style={{ textAlign: "center", marginTop: "20px" }}>Zeitplan</h3>
+      <p className="text-center">Klicke auf ein Zeitfenster, um das ausgewählte Modul zuzuweisen.</p>
+      <table
+        style={{
+          width: "100%",
+          maxWidth: "100%",
+          margin: "0 auto",
+          borderCollapse: "collapse",
+        }}
+      >
+        <thead>
+          <tr>
+            <th
+              style={{
+                backgroundColor: "#ff0000",
+                color: "white",
+                padding: "10px",
+                border: "1px solid #ddd",
+              }}
+            >
+              Zeit
+            </th>
+            {days.map((day) => (
+              <th
+                key={day}
+                style={{
+                  backgroundColor: "#ff0000",
+                  color: "white",
+                  padding: "10px",
+                  border: "1px solid #ddd",
+                }}
+              >
+                {day}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {scheduleTimes.map((time, index) => (
+            <tr
+              key={index}
+              style={{
+                backgroundColor: index % 2 === 0 ? "#f2f2f2" : "white",
+              }}
+            >
+              <td
+                style={{
+                  border: "1px solid #ddd",
+                  padding: "10px",
+                  fontWeight: "bold",
+                  backgroundColor: "#e8e8e8",
+                  textAlign: "center",
+                }}
+              >
+                {time}
+              </td>
+              {days.map((day) => {
+                const slotKey = `${time} ${day}`; // z.B. "08:00 Montag 27.02.25"
+                return (
+                  <td
+                    key={slotKey}
+                    style={{
+                      border: "1px solid #ddd",
+                      padding: "10px",
+                      textAlign: "center",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => assignModuleToTimeSlot(slotKey)}
+                  >
+                    {state.schedule[slotKey]
+                      ? state.schedule[slotKey].label
+                      : '—'}
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* Button zum Speichern */}
+      <div style={{ marginTop: "20px", textAlign: "center" }}>
+        <button
+          type="button"
+          className="btn btn-success"
+          onClick={handleSaveCalendar}
+        >
+          Speichern
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default TempKalender;
