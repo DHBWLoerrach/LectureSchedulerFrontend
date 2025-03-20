@@ -6,9 +6,9 @@ import { CreateModuleAPI } from '../APIs/Modules/CreateModuleAPI';
 export const NewModuleWidget = ({ addDepartment }) => {
   const [state, setState] = useState({
     employeeDetails: {
-      employeeFirstname: "",
-      employeeLastname: "",
-      assignedEmployees: []
+      employeeFirstname: '',
+      employeeLastname: '',
+      assignedEmployees: [],
     },
     allEmployeeOptions: [],
   });
@@ -17,10 +17,10 @@ export const NewModuleWidget = ({ addDepartment }) => {
     const fetchInfo = async () => {
       const allE = await ShowEmployeesAPI();
       const allEOptions = allE
-        .filter(person => person[3] === "Dozent") // Nur Dozenten filtern
-        .map(person => ({
+        .filter((person) => person[3] === 'Dozent') // Nur Dozenten filtern
+        .map((person) => ({
           value: person[0], // ID
-          label: `${person[1]} ${person[2]}` // Vorname + Nachname
+          label: `${person[1]} ${person[2]}`, // Vorname + Nachname
         }));
 
       setState((prevState) => ({
@@ -37,30 +37,35 @@ export const NewModuleWidget = ({ addDepartment }) => {
       ...prevState,
       employeeDetails: {
         ...prevState.employeeDetails,
-        [key]: value
+        [key]: value,
       },
     }));
   };
 
   const handleCreateDepartment = async () => {
-    const { employeeFirstname, employeeLastname, assignedEmployees } = state.employeeDetails;
+    const { employeeFirstname, employeeLastname, assignedEmployees } =
+      state.employeeDetails;
 
     if (!employeeFirstname || !employeeLastname) {
       alert('Bitte alle Felder ausfüllen!');
       return;
     }
 
-    const result = await CreateModuleAPI(employeeFirstname, employeeLastname, assignedEmployees);
+    const result = await CreateModuleAPI(
+      employeeFirstname,
+      employeeLastname,
+      assignedEmployees
+    );
 
     if (result.success) {
       addDepartment(result.employee);
       setState({
         employeeDetails: {
-          employeeFirstname: "",
-          employeeLastname: "",
-          assignedEmployees: []
+          employeeFirstname: '',
+          employeeLastname: '',
+          assignedEmployees: [],
         },
-        allEmployeeOptions: state.allEmployeeOptions
+        allEmployeeOptions: state.allEmployeeOptions,
       });
     }
   };
@@ -70,39 +75,58 @@ export const NewModuleWidget = ({ addDepartment }) => {
       <div className="bg-light text-center rounded p-4">
         <h6 className="mb-0">Neues Modul anlegen</h6>
 
-        <p className="text-start"><strong>Modulname</strong></p>
+        <p className="text-start">
+          <strong>Modulname</strong>
+        </p>
         <input
           type="text"
           className="form-control"
           value={state.employeeDetails.employeeFirstname}
-          onChange={(e) => updateEmployeeDetails('employeeFirstname', e.target.value)}
+          onChange={(e) =>
+            updateEmployeeDetails('employeeFirstname', e.target.value)
+          }
           placeholder="Modulname"
         />
         <br />
 
-        <p className="text-start"><strong>Vorlesungsstunden</strong></p>
+        <p className="text-start">
+          <strong>Vorlesungsstunden</strong>
+        </p>
         <input
           type="text"
           className="form-control"
           value={state.employeeDetails.employeeLastname}
-          onChange={(e) => updateEmployeeDetails('employeeLastname', e.target.value)}
+          onChange={(e) =>
+            updateEmployeeDetails('employeeLastname', e.target.value)
+          }
           placeholder="Vorlesungsstunden"
         />
         <br />
 
-        <p className="text-start"><strong>Zugewiesene Dozenten</strong></p>
+        <p className="text-start">
+          <strong>Zugewiesene Dozenten</strong>
+        </p>
         <Select
           isMulti
           options={state.allEmployeeOptions}
-          value={state.allEmployeeOptions.filter(option => state.employeeDetails.assignedEmployees.includes(option.value))}
+          value={state.allEmployeeOptions.filter((option) =>
+            state.employeeDetails.assignedEmployees.includes(option.value)
+          )}
           onChange={(selectedOptions) => {
-            updateEmployeeDetails('assignedEmployees', selectedOptions.map(option => option.value));
+            updateEmployeeDetails(
+              'assignedEmployees',
+              selectedOptions.map((option) => option.value)
+            );
           }}
           placeholder="Dozenten auswählen"
         />
         <br />
 
-        <button type="button" className="btn btn-outline-success m-2" onClick={handleCreateDepartment}>
+        <button
+          type="button"
+          className="btn btn-outline-success m-2"
+          onClick={handleCreateDepartment}
+        >
           Erstellen
         </button>
       </div>

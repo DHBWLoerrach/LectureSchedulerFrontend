@@ -20,38 +20,37 @@ const Login = () => {
 
     try {
       // Send login request to the API
-      const response = await fetch(process.env.REACT_APP_BACKEND_IP+'/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ username, password })
-      });
+      const response = await fetch(
+        process.env.REACT_APP_BACKEND_IP + '/login',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username, password }),
+        }
+      );
 
       if (!response.ok) {
-        if (response.status == 401){
+        if (response.status == 401) {
           throw new Error('Falsche Email oder Passwort.');
-        }
-        else{
+        } else {
           throw new Error('Login failed');
         }
-        
       }
 
       const data = await response.json();
       localStorage.setItem('token', data.token); // Store token in localStorage
 
       const myInfo = await fetchProtectedData();
-      console.log("2343424324",myInfo)
-      if(myInfo[2] !== "Dozent"){
+      console.log('2343424324', myInfo);
+      if (myInfo[2] !== 'Dozent') {
         // Redirect to the main page
-      navigate('/admin');
-      }
-      else{
+        navigate('/admin');
+      } else {
         // Redirect to the main page
-      navigate('/');
+        navigate('/');
       }
-      
     } catch (error) {
       setErrorMessage(error.message);
     }
@@ -59,10 +58,18 @@ const Login = () => {
 
   return (
     <div className="container-fluid">
-      <div className="row h-100 align-items-center justify-content-center" style={{ minHeight: '100vh' }}>
+      <div
+        className="row h-100 align-items-center justify-content-center"
+        style={{ minHeight: '100vh' }}
+      >
         <div className="col-12 col-sm-8 col-md-6 col-lg-5 col-xl-4">
           <center>
-            <img src="../img/DHBW_Logo.png" alt="Exyte Logo" width="250vh" height="auto" />
+            <img
+              src="../img/DHBW_Logo.png"
+              alt="Exyte Logo"
+              width="250vh"
+              height="auto"
+            />
           </center>
           <div className="bg-light rounded p-4 p-sm-5 my-4 mx-3">
             <div className="d-flex align-items-center justify-content-between mb-3">
@@ -92,15 +99,29 @@ const Login = () => {
               <label htmlFor="floatingPassword">Passwort</label>
             </div>
             <div className="d-flex align-items-center justify-content-between mb-4">
-              <Link to="/forgot-password"><text className="text-danger">Passwort vergessen?</text></Link>
+              <Link to="/forgot-password">
+                <text className="text-danger">Passwort vergessen?</text>
+              </Link>
             </div>
-            <button type="submit" className="btn btn-danger py-3 w-100 mb-4" id="loginButton" onClick={handleLogin}>
+            <button
+              type="submit"
+              className="btn btn-danger py-3 w-100 mb-4"
+              id="loginButton"
+              onClick={handleLogin}
+            >
               Login
             </button>
             <p className="text-center mb-0">
-              Sie haben keinen Account? <Link to="/signup"><text className="text-danger">Registrieren</text></Link>
+              Sie haben keinen Account?{' '}
+              <Link to="/signup">
+                <text className="text-danger">Registrieren</text>
+              </Link>
             </p>
-            <center><div id="error-message" className="text-danger">{errorMessage}</div></center>
+            <center>
+              <div id="error-message" className="text-danger">
+                {errorMessage}
+              </div>
+            </center>
           </div>
         </div>
       </div>

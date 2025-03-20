@@ -1,23 +1,24 @@
-export const DeleteSGAPI = async ( selectedIds ) => {
-    const token = localStorage.getItem('token');
-    try {
-      const response = await fetch(process.env.REACT_APP_BACKEND_IP+'/sgs/delete', {
+export const DeleteSGAPI = async (selectedIds) => {
+  const token = localStorage.getItem('token');
+  try {
+    const response = await fetch(
+      process.env.REACT_APP_BACKEND_IP + '/sgs/delete',
+      {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ ids: selectedIds }),
-      });
+      }
+    );
 
-      if (response.ok) {
-        return [true, response.text()];
-        
-        // Update the projects state to reflect the deleted items
+    if (response.ok) {
+      return [true, response.text()];
 
-      } 
-    } catch (error) {
-      
-      alert('Bei der Löschung von Mitarbeitern ist ein Fehler aufgetreten.');
+      // Update the projects state to reflect the deleted items
     }
-  };
+  } catch (error) {
+    alert('Bei der Löschung von Mitarbeitern ist ein Fehler aufgetreten.');
+  }
+};

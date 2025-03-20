@@ -11,10 +11,10 @@ export const EditModuleWidget = (props) => {
 
   const [state, setState] = useState({
     employeeDetails: {
-      Kursname: "",
-      Studiengang: "",
-      Semester: "",
-      assignedEmployees: []
+      Kursname: '',
+      Studiengang: '',
+      Semester: '',
+      assignedEmployees: [],
     },
     allEmployeeOptions: [],
     allSGOptions: [],
@@ -25,11 +25,11 @@ export const EditModuleWidget = (props) => {
       setState((prevState) => ({
         ...prevState,
         employeeDetails: {
-          Kursname: employee[1] || "",
-          Studiengang: employee[2] || "",
-          Semester: employee[3] || "",
-          assignedEmployees: employee[4] || [] 
-        }
+          Kursname: employee[1] || '',
+          Studiengang: employee[2] || '',
+          Semester: employee[3] || '',
+          assignedEmployees: employee[4] || [],
+        },
       }));
     }
   }, [employee]);
@@ -40,15 +40,15 @@ export const EditModuleWidget = (props) => {
         const allE = await ShowEmployeesAPI();
         const allSG = await ShowSGAPI();
         const allEOptions = allE
-          .filter(person => person[3] === "Sekretariat")
-          .map(person => ({
-            value: person[0], 
-            label: `${person[1]} ${person[2]}` 
+          .filter((person) => person[3] === 'Sekretariat')
+          .map((person) => ({
+            value: person[0],
+            label: `${person[1]} ${person[2]}`,
           }));
 
-        const allSGOptions = allSG.map(sg => ({
-          value: sg[0], 
-          label: sg[1] 
+        const allSGOptions = allSG.map((sg) => ({
+          value: sg[0],
+          label: sg[1],
         }));
 
         setState((prevState) => ({
@@ -57,7 +57,7 @@ export const EditModuleWidget = (props) => {
           allSGOptions: allSGOptions,
         }));
       } catch (error) {
-        console.error("Fehler beim Laden der Daten:", error);
+        console.error('Fehler beim Laden der Daten:', error);
       }
     };
 
@@ -75,7 +75,8 @@ export const EditModuleWidget = (props) => {
   };
 
   const handleEditDepartment = async () => {
-    const { Kursname, Studiengang, Semester, assignedEmployees } = state.employeeDetails;
+    const { Kursname, Studiengang, Semester, assignedEmployees } =
+      state.employeeDetails;
 
     if (!Kursname || !Semester || !Studiengang) {
       alert('Bitte alle Felder ausfüllen!');
@@ -83,8 +84,14 @@ export const EditModuleWidget = (props) => {
     }
 
     try {
-      const result = await EditCourseAPI(employee[0], Kursname, Studiengang, Semester, assignedEmployees);
-      
+      const result = await EditCourseAPI(
+        employee[0],
+        Kursname,
+        Studiengang,
+        Semester,
+        assignedEmployees
+      );
+
       if (result.success) {
         editDepartment(result.employee);
         alert('Modul erfolgreich bearbeitet!');
@@ -92,7 +99,7 @@ export const EditModuleWidget = (props) => {
         alert('Fehler beim Bearbeiten des Moduls.');
       }
     } catch (error) {
-      console.error("Fehler beim Bearbeiten des Moduls:", error);
+      console.error('Fehler beim Bearbeiten des Moduls:', error);
       alert('Es gab ein Problem beim Bearbeiten des Moduls.');
     }
   };
@@ -105,7 +112,9 @@ export const EditModuleWidget = (props) => {
           <i style={{ color: '#009CFF' }} className="bi-gear-fill fa-2x"></i>
         </div>
 
-        <p className="text-start"><strong>Kursname</strong></p>
+        <p className="text-start">
+          <strong>Kursname</strong>
+        </p>
         <input
           type="text"
           className="form-control"
@@ -115,48 +124,68 @@ export const EditModuleWidget = (props) => {
         />
         <br />
 
-        <p className="text-start"><strong>Studiengang</strong></p>
+        <p className="text-start">
+          <strong>Studiengang</strong>
+        </p>
         <Select
           isMulti={false}
           options={state.allSGOptions}
-          value={state.allSGOptions.find(option => option.value === state.employeeDetails.Studiengang) || null}
+          value={
+            state.allSGOptions.find(
+              (option) => option.value === state.employeeDetails.Studiengang
+            ) || null
+          }
           onChange={(selectedOption) => {
-            updateEmployeeDetails('Studiengang', selectedOption ? selectedOption.value : '');
+            updateEmployeeDetails(
+              'Studiengang',
+              selectedOption ? selectedOption.value : ''
+            );
           }}
           placeholder="Studiengang auswählen"
         />
         <br />
 
-        <p className="text-start"><strong>Semester</strong></p>
+        <p className="text-start">
+          <strong>Semester</strong>
+        </p>
         <input
-  type="number"
-  className="form-control"
-  value={state.employeeDetails.Semester}
-  onChange={(e) => {
-    const value = Math.max(1, Math.min(6, Number(e.target.value))); // Einschränkung auf 1-6
-    updateEmployeeDetails('Semester', value);
-  }}
-  placeholder="Semester"
-  min="1"
-  max="6"
-/>
+          type="number"
+          className="form-control"
+          value={state.employeeDetails.Semester}
+          onChange={(e) => {
+            const value = Math.max(1, Math.min(6, Number(e.target.value))); // Einschränkung auf 1-6
+            updateEmployeeDetails('Semester', value);
+          }}
+          placeholder="Semester"
+          min="1"
+          max="6"
+        />
         <br />
 
-        <p className="text-start"><strong>Zugewiesenes Sekretariat</strong></p>
+        <p className="text-start">
+          <strong>Zugewiesenes Sekretariat</strong>
+        </p>
         <Select
           isMulti
           options={state.allEmployeeOptions}
-          value={state.allEmployeeOptions.filter(option => 
+          value={state.allEmployeeOptions.filter((option) =>
             state.employeeDetails.assignedEmployees.includes(option.value)
           )}
           onChange={(selectedOptions) => {
-            updateEmployeeDetails('assignedEmployees', selectedOptions.map(option => option.value));
+            updateEmployeeDetails(
+              'assignedEmployees',
+              selectedOptions.map((option) => option.value)
+            );
           }}
           placeholder="Sekretariat auswählen"
         />
         <br />
 
-        <button type="button" className="btn btn-outline-warning m-2" onClick={handleEditDepartment}>
+        <button
+          type="button"
+          className="btn btn-outline-warning m-2"
+          onClick={handleEditDepartment}
+        >
           Bearbeiten
         </button>
       </div>

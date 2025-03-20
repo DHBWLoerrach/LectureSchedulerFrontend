@@ -7,7 +7,7 @@ import { CreateModuleAPI } from '../APIs/Modules/CreateModuleAPI';
 export const NewSGWidget = ({ addDepartment }) => {
   const [state, setState] = useState({
     employeeDetails: {
-      employeeFirstname: "",
+      employeeFirstname: '',
       assignedEmployees: [[], [], [], [], [], []], // Ensure it remains a 6-element array
     },
     allModuleOptions: [], // Renamed to match module context
@@ -17,17 +17,17 @@ export const NewSGWidget = ({ addDepartment }) => {
     const fetchInfo = async () => {
       try {
         const allModules = await ShowModulesAPI();
-        const allModuleOptions = allModules.map(module => ({
+        const allModuleOptions = allModules.map((module) => ({
           value: module[0], // Assuming ID
           label: module[1], // Assuming Name
         }));
 
-        setState(prevState => ({
+        setState((prevState) => ({
           ...prevState,
           allModuleOptions,
         }));
       } catch (error) {
-        console.error("Error fetching modules:", error);
+        console.error('Error fetching modules:', error);
       }
     };
 
@@ -35,19 +35,23 @@ export const NewSGWidget = ({ addDepartment }) => {
   }, []);
 
   const updateEmployeeDetails = (key, value) => {
-    setState(prevState => ({
+    setState((prevState) => ({
       ...prevState,
       employeeDetails: {
         ...prevState.employeeDetails,
-        [key]: value
+        [key]: value,
       },
     }));
   };
 
   const updateAssignedModules = (semesterIndex, selectedOptions) => {
-    setState(prevState => {
-      const updatedAssignedEmployees = [...prevState.employeeDetails.assignedEmployees];
-      updatedAssignedEmployees[semesterIndex] = selectedOptions.map(option => option.value);
+    setState((prevState) => {
+      const updatedAssignedEmployees = [
+        ...prevState.employeeDetails.assignedEmployees,
+      ];
+      updatedAssignedEmployees[semesterIndex] = selectedOptions.map(
+        (option) => option.value
+      );
       return {
         ...prevState,
         employeeDetails: {
@@ -70,16 +74,16 @@ export const NewSGWidget = ({ addDepartment }) => {
       const result = await CreateSGAPI(employeeFirstname, assignedEmployees);
       if (result.success) {
         addDepartment(result.employee);
-        setState(prevState => ({
+        setState((prevState) => ({
           ...prevState,
           employeeDetails: {
-            employeeFirstname: "",
+            employeeFirstname: '',
             assignedEmployees: [[], [], [], [], [], []], // Reset properly
           },
         }));
       }
     } catch (error) {
-      console.error("Error creating module:", error);
+      console.error('Error creating module:', error);
     }
   };
 
@@ -88,33 +92,47 @@ export const NewSGWidget = ({ addDepartment }) => {
       <div className="bg-light text-center rounded p-4">
         <h6 className="mb-0">Neues Modul anlegen</h6>
 
-        <p className="text-start"><strong>Studiengangsname</strong></p>
+        <p className="text-start">
+          <strong>Studiengangsname</strong>
+        </p>
         <input
           type="text"
           className="form-control"
           value={state.employeeDetails.employeeFirstname}
-          onChange={(e) => updateEmployeeDetails('employeeFirstname', e.target.value)}
+          onChange={(e) =>
+            updateEmployeeDetails('employeeFirstname', e.target.value)
+          }
           placeholder="Studiengangsname"
         />
         <br />
 
         {[...Array(6)].map((_, index) => (
           <div key={index}>
-            <p className="text-start"><strong>Module {index + 1}. Semester</strong></p>
+            <p className="text-start">
+              <strong>Module {index + 1}. Semester</strong>
+            </p>
             <Select
               isMulti
               options={state.allModuleOptions}
-              value={state.allModuleOptions.filter(option =>
-                state.employeeDetails.assignedEmployees[index]?.includes(option.value)
+              value={state.allModuleOptions.filter((option) =>
+                state.employeeDetails.assignedEmployees[index]?.includes(
+                  option.value
+                )
               )}
-              onChange={(selectedOptions) => updateAssignedModules(index, selectedOptions)}
+              onChange={(selectedOptions) =>
+                updateAssignedModules(index, selectedOptions)
+              }
               placeholder="Module auswählen"
             />
             <br />
           </div>
         ))}
 
-        <button type="button" className="btn btn-outline-success m-2" onClick={handleCreateDepartment}>
+        <button
+          type="button"
+          className="btn btn-outline-success m-2"
+          onClick={handleCreateDepartment}
+        >
           Erstellen
         </button>
       </div>

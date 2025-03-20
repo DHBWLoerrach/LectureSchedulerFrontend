@@ -1,15 +1,12 @@
-
-
 .datePickerCalendar {
   width: 100% !important; /* Make sure the calendar fills the entire width of its container */
-
 }
 
 .react-datepicker-wrapper,
 .react-datepicker__input-container,
 .react-datepicker__input-container input {
-    display: block !important;
-    width: 15vh !important;
-    height: 4vh;
-    text-align: center;
+  display: block !important;
+  width: 15vh !important;
+  height: 4vh;
+  text-align: center;
 }

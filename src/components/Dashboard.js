@@ -18,14 +18,18 @@ const Dashboard = () => {
     userInfo: [],
     allProjects: [],
     selectedDate: null,
-    myID: "",
+    myID: '',
     myModulesCount: 0,
     myCoursesCount: 0,
     loading: true,
-    imagesLoaded: false
+    imagesLoaded: false,
   });
 
-  const images = ["img/DHBW_Logo.png", "img/Dashboard.jpeg", "img/DashboardNav.png"]; // Add all images that need to be loaded
+  const images = [
+    'img/DHBW_Logo.png',
+    'img/Dashboard.jpeg',
+    'img/DashboardNav.png',
+  ]; // Add all images that need to be loaded
 
   useEffect(() => {
     const loadImages = async () => {
@@ -47,7 +51,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchInfo = async () => {
       const myInfo = await fetchProtectedData();
-      const myID = myInfo[5]
+      const myID = myInfo[5];
 
       const myModules = await ShowModulesAPI();
 
@@ -58,16 +62,15 @@ const Dashboard = () => {
         }
         return acc;
       }, 0);
-      
+
       console.log(count); // Outputs: 2
 
-      
-      console.log(myID)
-      console.log(myModules)
+      console.log(myID);
+      console.log(myModules);
       setState((prevState) => ({
         ...prevState,
         myModulesCount: count,
-        loading: false
+        loading: false,
       }));
     };
 
@@ -76,11 +79,19 @@ const Dashboard = () => {
 
   if (state.loading) {
     return (
-      <div id="spinner" className="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+      <div
+        id="spinner"
+        className="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center"
+      >
         <div className="spinner-border text-danger" role="status">
           <span className="sr-only">Loading...</span>
         </div>
-        <img src="img/DHBW_Logo.png" alt="Exyte Logo" width="100vh" height="auto" />
+        <img
+          src="img/DHBW_Logo.png"
+          alt="Exyte Logo"
+          width="100vh"
+          height="auto"
+        />
       </div>
     );
   }
@@ -90,7 +101,11 @@ const Dashboard = () => {
       <div className="container-fluid pt-4 px-4">
         <div className="row g-4">
           <div className="h-100 bg-white rounded p-4 d-flex align-items-center justify-content-center">
-            <img src="img/DashboardNav.png" alt="" style={{ width: '100%', height: 'auto' }} />
+            <img
+              src="img/DashboardNav.png"
+              alt=""
+              style={{ width: '100%', height: 'auto' }}
+            />
           </div>
         </div>
       </div>
@@ -106,14 +121,16 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-          
-
         </div>
       </div>
       <div className="container-fluid pt-4 px-4">
         <div className="row g-4">
           <div className="h-100 bg-white rounded p-4 d-flex align-items-center justify-content-center">
-            <img src="img/Dashboard.jpeg" alt="" style={{ width: '100%', height: 'auto' }} />
+            <img
+              src="img/Dashboard.jpeg"
+              alt=""
+              style={{ width: '100%', height: 'auto' }}
+            />
           </div>
         </div>
       </div>

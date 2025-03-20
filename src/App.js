@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
 import Dashboard from './components/Dashboard';
 import DashboardAdmin from './components/DashboardAdmin';
@@ -15,56 +15,119 @@ import Login from './components/Login';
 import Kalender from './components/Calendar/Calendar';
 import Admin from './components/Admin/Admin';
 
-import TempStudiengänge from './components/TempMockups/TempStudiengänge';
-import TempModule from './components/TempMockups/TempModule';
-import TempKurse from './components/TempMockups/TempKurse';
-import TempAdmin from './components/TempMockups/TempAdmin';
 import { AppLayout } from './AppLayout';
 
 // AppLayout makes sure to display the top, side and footerbar only when the client is not in the login menu
 
 const App = () => {
-
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    
-      setLoading(false);
-
+    setLoading(false);
   }, []);
 
   return (
     <Router>
       {loading && (
-        <div id="spinner" className="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div
+          id="spinner"
+          className="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center"
+        >
           <div className="spinner-border text-primary" role="status">
             <span className="sr-only">Loading...</span>
           </div>
-          <img src="img/Exyte_Logo.png" alt="Exyte Logo" width="100vh" height="auto" />
+          <img
+            src="img/Exyte_Logo.png"
+            alt="Exyte Logo"
+            width="100vh"
+            height="auto"
+          />
         </div>
       )}
       {loading && (
-        <div id="spinner" className="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div
+          id="spinner"
+          className="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center"
+        >
           <div className="spinner-border text-primary" role="status">
             <span className="sr-only">Loading...</span>
           </div>
-          <img src="img/Exyte_Logo.png" alt="Exyte Logo" width="100vh" height="auto" />
+          <img
+            src="img/Exyte_Logo.png"
+            alt="Exyte Logo"
+            width="100vh"
+            height="auto"
+          />
         </div>
       )}
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/" element={<AppLayout><Dashboard /></AppLayout>} />
-        <Route path="/admin" element={<AppLayout><DashboardAdmin /></AppLayout>} />
-        <Route path="/benutzerverwaltung" element={<AppLayout><PersonnelManagement  /></AppLayout>} />
-        <Route path="/studiengänge" element={<AppLayout><SGManagement  /></AppLayout>} />
-        <Route path="/module" element={<AppLayout><ModuleManagement  /></AppLayout>} />
-        <Route path="/kurse" element={<AppLayout><CourseManagement  /></AppLayout>} />
+        <Route
+          path="/"
+          element={
+            <AppLayout>
+              <Dashboard />
+            </AppLayout>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <AppLayout>
+              <DashboardAdmin />
+            </AppLayout>
+          }
+        />
+        <Route
+          path="/benutzerverwaltung"
+          element={
+            <AppLayout>
+              <PersonnelManagement />
+            </AppLayout>
+          }
+        />
+        <Route
+          path="/studiengänge"
+          element={
+            <AppLayout>
+              <SGManagement />
+            </AppLayout>
+          }
+        />
+        <Route
+          path="/module"
+          element={
+            <AppLayout>
+              <ModuleManagement />
+            </AppLayout>
+          }
+        />
+        <Route
+          path="/kurse"
+          element={
+            <AppLayout>
+              <CourseManagement />
+            </AppLayout>
+          }
+        />
 
-        <Route path="/admin-bereich" element={<AppLayout><Admin  /></AppLayout>} />
+        <Route
+          path="/admin-bereich"
+          element={
+            <AppLayout>
+              <Admin />
+            </AppLayout>
+          }
+        />
 
-        <Route path="/kalender" element={<AppLayout><Kalender  /></AppLayout>} />
-
-        
+        <Route
+          path="/kalender"
+          element={
+            <AppLayout>
+              <Kalender />
+            </AppLayout>
+          }
+        />
       </Routes>
     </Router>
   );

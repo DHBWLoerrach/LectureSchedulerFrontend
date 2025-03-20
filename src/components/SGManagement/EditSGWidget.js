@@ -9,7 +9,7 @@ export const EditSGWidget = (props) => {
 
   const [state, setState] = useState({
     employeeDetails: {
-      employeeFirstname: "",
+      employeeFirstname: '',
       assignedEmployees: [[], [], [], [], [], []], // Ensure structure is always correct
     },
     allModuleOptions: [],
@@ -21,7 +21,7 @@ export const EditSGWidget = (props) => {
       setState((prevState) => ({
         ...prevState,
         employeeDetails: {
-          employeeFirstname: employee[1] || "",
+          employeeFirstname: employee[1] || '',
           assignedEmployees: [
             employee[2] || [],
             employee[3] || [],
@@ -30,7 +30,7 @@ export const EditSGWidget = (props) => {
             employee[6] || [],
             employee[7] || [],
           ],
-        }
+        },
       }));
     }
   }, [employee]);
@@ -40,17 +40,17 @@ export const EditSGWidget = (props) => {
     const fetchModules = async () => {
       try {
         const allModules = await ShowModulesAPI();
-        const allModuleOptions = allModules.map(module => ({
+        const allModuleOptions = allModules.map((module) => ({
           value: module[0], // ID
           label: module[1], // Name
         }));
 
-        setState(prevState => ({
+        setState((prevState) => ({
           ...prevState,
           allModuleOptions,
         }));
       } catch (error) {
-        console.error("Error fetching modules:", error);
+        console.error('Error fetching modules:', error);
       }
     };
 
@@ -73,12 +73,18 @@ export const EditSGWidget = (props) => {
     const { employeeFirstname, assignedEmployees } = state.employeeDetails;
 
     if (!employeeFirstname) {
-      alert('Ohne vollständige Informationen können Module nicht angepasst werden!');
+      alert(
+        'Ohne vollständige Informationen können Module nicht angepasst werden!'
+      );
       return;
     }
 
-    const result = await EditSGAPI(employee[0], employeeFirstname, assignedEmployees);
-    
+    const result = await EditSGAPI(
+      employee[0],
+      employeeFirstname,
+      assignedEmployees
+    );
+
     if (result.success) {
       editDepartment(result.employee);
 
@@ -86,7 +92,7 @@ export const EditSGWidget = (props) => {
       setState((prevState) => ({
         ...prevState,
         employeeDetails: {
-          employeeFirstname: "",
+          employeeFirstname: '',
           assignedEmployees: [[], [], [], [], [], []],
         },
       }));
@@ -97,17 +103,23 @@ export const EditSGWidget = (props) => {
     <div className="container-fluid pt-4 px-4">
       <div className="bg-light text-center rounded p-4">
         <div className="d-flex align-items-center justify-content-between mb-4">
-          <h6 className="mb-0">Bearbeiten: {employee ? employee[1] : "Unbekannt"}</h6>
+          <h6 className="mb-0">
+            Bearbeiten: {employee ? employee[1] : 'Unbekannt'}
+          </h6>
           <i style={{ color: '#009CFF' }} className="bi-gear-fill fa-2x"></i>
         </div>
 
         {/* Modulname Input */}
-        <p className="text-start"><strong>Studiengangsname</strong></p>
+        <p className="text-start">
+          <strong>Studiengangsname</strong>
+        </p>
         <input
           type="text"
           className="form-control"
           value={state.employeeDetails.employeeFirstname}
-          onChange={(e) => updateEmployeeDetails('employeeFirstname', e.target.value)}
+          onChange={(e) =>
+            updateEmployeeDetails('employeeFirstname', e.target.value)
+          }
           placeholder="Modulname"
         />
         <br />
@@ -115,17 +127,30 @@ export const EditSGWidget = (props) => {
         {/* Assigned Modules for Each Semester */}
         {[...Array(6)].map((_, semesterIndex) => (
           <div key={semesterIndex}>
-            <p className="text-start"><strong>Module / Vorlesungen {semesterIndex + 1}. Semester</strong></p>
+            <p className="text-start">
+              <strong>
+                Module / Vorlesungen {semesterIndex + 1}. Semester
+              </strong>
+            </p>
             <Select
               isMulti
               options={state.allModuleOptions}
-              value={state.allModuleOptions.filter(option => 
-                state.employeeDetails.assignedEmployees[semesterIndex]?.includes(option.value)
+              value={state.allModuleOptions.filter((option) =>
+                state.employeeDetails.assignedEmployees[
+                  semesterIndex
+                ]?.includes(option.value)
               )}
               onChange={(selectedOptions) => {
-                const updatedAssignedEmployees = [...state.employeeDetails.assignedEmployees];
-                updatedAssignedEmployees[semesterIndex] = selectedOptions.map(option => option.value);
-                updateEmployeeDetails('assignedEmployees', updatedAssignedEmployees);
+                const updatedAssignedEmployees = [
+                  ...state.employeeDetails.assignedEmployees,
+                ];
+                updatedAssignedEmployees[semesterIndex] = selectedOptions.map(
+                  (option) => option.value
+                );
+                updateEmployeeDetails(
+                  'assignedEmployees',
+                  updatedAssignedEmployees
+                );
               }}
               placeholder="Module auswählen"
             />
@@ -134,7 +159,11 @@ export const EditSGWidget = (props) => {
         ))}
 
         {/* Edit Button */}
-        <button type="button" className="btn btn-outline-warning m-2" onClick={handleEditDepartment}>
+        <button
+          type="button"
+          className="btn btn-outline-warning m-2"
+          onClick={handleEditDepartment}
+        >
           Bearbeiten
         </button>
       </div>
