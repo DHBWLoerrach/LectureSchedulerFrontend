@@ -1,12 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
-import DatePicker from 'react-datepicker';
+import { useState, useEffect, useRef } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { registerLocale } from 'react-datepicker';
 import de from 'date-fns/locale/de'; // Import German locale
 import { fetchProtectedData } from '../../js/fetchProtectedData';
 import { NewModuleWidget } from './NewModuleWidget';
 import { ShowModule } from './ShowModule';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { ShowModulesAPI } from '../APIs/Modules/ShowModulesAPI';
 import { DeleteModuleAPI } from '../APIs/Modules/DeleteModuleAPI';
@@ -306,7 +305,7 @@ const ModuleManagement = () => {
               className="btn btn-outline-danger m-2"
               onClick={handleDeleteSelected}
             >
-              Auswahl Löschen
+              Auswahl löschen
             </button>
           </div>
           <div className="table-responsive">

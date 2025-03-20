@@ -1,11 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import DatePicker from 'react-datepicker';
+import { useState, useEffect, useRef } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { registerLocale } from 'react-datepicker';
 import de from 'date-fns/locale/de'; // Import German locale
 import Select from 'react-select';
-import { useNavigate, Link } from 'react-router-dom';
-import { ShowCoursesAPI } from '../APIs/Courses/ShowCoursesAPI';
+import { useNavigate } from 'react-router-dom';
 import { ShowSGAPI } from '../APIs/SG/ShowSGAPI';
 import { GetAuditAPI } from '../APIs/Admin/GetAuditAPI';
 import { UpdateSGHours } from '../APIs/Admin/UpdateSGHours';
@@ -315,7 +313,7 @@ const Admin = () => {
               className="btn btn-outline-warning m-2"
               onClick={handleChangeHours}
             >
-              Bearbeiten
+              Speichern
             </button>
           </div>
         </div>

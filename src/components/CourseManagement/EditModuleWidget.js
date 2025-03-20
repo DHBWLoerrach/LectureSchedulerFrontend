@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Select from 'react-select';
 import { ShowEmployeesAPI } from '../APIs/Employees/ShowEmployeesAPI';
-import { EditModuleAPI } from '../APIs/Modules/EditModuleAPI';
 import '../_Datapicker.css';
 import { ShowSGAPI } from '../APIs/SG/ShowSGAPI';
 import { EditCourseAPI } from '../APIs/Courses/EditCourseAPI';
@@ -94,13 +93,13 @@ export const EditModuleWidget = (props) => {
 
       if (result.success) {
         editDepartment(result.employee);
-        alert('Modul erfolgreich bearbeitet!');
+        alert('Kurs erfolgreich bearbeitet!');
       } else {
-        alert('Fehler beim Bearbeiten des Moduls.');
+        alert('Fehler beim Bearbeiten des Kurses.');
       }
     } catch (error) {
-      console.error('Fehler beim Bearbeiten des Moduls:', error);
-      alert('Es gab ein Problem beim Bearbeiten des Moduls.');
+      console.error('Fehler beim Bearbeiten des Kurses:', error);
+      alert('Es gab ein Problem beim Bearbeiten des Kurses.');
     }
   };
 
@@ -186,7 +185,7 @@ export const EditModuleWidget = (props) => {
           className="btn btn-outline-warning m-2"
           onClick={handleEditDepartment}
         >
-          Bearbeiten
+          Speichern
         </button>
       </div>
     </div>

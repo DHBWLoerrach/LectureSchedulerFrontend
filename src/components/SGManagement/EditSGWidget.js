@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Select from 'react-select';
 import { ShowModulesAPI } from '../APIs/Modules/ShowModulesAPI';
 import { EditSGAPI } from '../APIs/SG/EditSGAPI';
@@ -164,7 +164,7 @@ export const EditSGWidget = (props) => {
           className="btn btn-outline-warning m-2"
           onClick={handleEditDepartment}
         >
-          Bearbeiten
+          Speichern
         </button>
       </div>
     </div>

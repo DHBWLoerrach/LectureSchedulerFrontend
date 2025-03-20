@@ -1,9 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
-import DatePicker from 'react-datepicker';
+import { useState, useEffect, useRef } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { registerLocale } from 'react-datepicker';
 import de from 'date-fns/locale/de'; // Import German locale
-import { fetchProtectedData } from '../../js/fetchProtectedData';
 import Select from 'react-select';
 
 import '../_Datapicker.css';
@@ -227,7 +225,7 @@ const TempStudiengänge = () => {
               className="btn btn-outline-danger m-2"
               onClick={handleDeleteSelected}
             >
-              Auswahl Löschen
+              Auswahl löschen
             </button>
           </div>
           <div className="table-responsive">

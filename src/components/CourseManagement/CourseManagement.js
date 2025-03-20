@@ -304,7 +304,7 @@ const CourseManagement = () => {
               className="btn btn-outline-danger m-2"
               onClick={handleDeleteSelected}
             >
-              Auswahl Löschen
+              Auswahl löschen
             </button>
           </div>
           <div className="table-responsive">

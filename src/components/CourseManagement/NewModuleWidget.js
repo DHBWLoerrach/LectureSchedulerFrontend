@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Select from 'react-select';
 import { ShowEmployeesAPI } from '../APIs/Employees/ShowEmployeesAPI';
 import { ShowSGAPI } from '../APIs/SG/ShowSGAPI';
-import { CreateModuleAPI } from '../APIs/Modules/CreateModuleAPI';
 import { CreateCourseAPI } from '../APIs/Courses/CreateCourseAPI';
 
 export const NewModuleWidget = ({ addDepartment }) => {
@@ -86,13 +85,13 @@ export const NewModuleWidget = ({ addDepartment }) => {
             assignedEmployees: [],
           },
         }));
-        alert('Modul erfolgreich erstellt!');
+        alert('Kurs erfolgreich erstellt!');
       } else {
-        alert('Fehler beim Erstellen des Moduls.');
+        alert('Fehler beim Erstellen des Kurses.');
       }
     } catch (error) {
-      console.error('Fehler beim Erstellen des Moduls:', error);
-      alert('Es gab ein Problem beim Erstellen des Moduls.');
+      console.error('Fehler beim Erstellen des Kurses:', error);
+      alert('Es gab ein Problem beim Erstellen des Kurses.');
     }
   };
 

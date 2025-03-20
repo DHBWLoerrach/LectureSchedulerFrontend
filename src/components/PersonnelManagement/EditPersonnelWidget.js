@@ -1,11 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import DatePicker from 'react-datepicker';
+import { useState, useEffect } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { registerLocale } from 'react-datepicker';
 import de from 'date-fns/locale/de'; // Import German locale
-import Select from 'react-select';
 
-import { ShowEmployeesAPI } from '../APIs/Employees/ShowEmployeesAPI';
 import { EditEmployeeAPI } from '../APIs/Employees/EditEmployeeAPI';
 import '../_Datapicker.css';
 
@@ -183,7 +180,7 @@ export const EditPersonnelWidget = (props) => {
           className="btn btn-outline-warning m-2"
           onClick={handleEditDepartment}
         >
-          Bearbeiten
+          Speichern
         </button>
       </div>
     </div>
