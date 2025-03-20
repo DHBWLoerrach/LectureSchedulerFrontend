@@ -1,16 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
-import DatePicker from 'react-datepicker';
+import { useState, useEffect, useRef } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { registerLocale } from 'react-datepicker';
 import de from 'date-fns/locale/de'; // Import German locale
 import { fetchProtectedData } from '../../js/fetchProtectedData';
 import { NewModuleWidget } from './NewModuleWidget';
 import { ShowModule } from './ShowModule';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { ShowModulesAPI } from '../APIs/Modules/ShowModulesAPI';
 import { ShowCoursesAPI } from '../APIs/Courses/ShowCoursesAPI';
-import { DeleteModuleAPI } from '../APIs/Modules/DeleteModuleAPI';
 import { EditModuleWidget } from './EditModuleWidget';
 import '../_Datapicker.css';
 import { DeleteCourseAPI } from '../APIs/Courses/DeleteCourseAPI';
@@ -288,7 +286,7 @@ const CourseManagement = () => {
             type="button"
             onClick={handleShownewDepartmentWidget}
           >
-            Neues Modul anlegen
+            Neuen Kurs anlegen
           </button>
         )}
       </center>
