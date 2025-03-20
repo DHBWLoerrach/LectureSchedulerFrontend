@@ -99,7 +99,7 @@ export const NewModuleWidget = ({ addDepartment }) => {
   return (
     <div className="container-fluid pt-4 px-4">
       <div className="bg-light text-center rounded p-4">
-        <h6 className="mb-0">Neues Modul anlegen</h6>
+        <h6 className="mb-0">Neuen Kurs anlegen</h6>
 
         <p className="text-start">
           <strong>Kursname</strong>
